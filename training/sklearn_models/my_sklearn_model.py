@@ -14,8 +14,8 @@ class SklearnModel(ABC):
     self.y_test = y_test
     self.model = model
     self.classifier = classifier
+    self.threshold = 0.6
     self.file_name = f'training/sklearn_models/{self.classifier}_{file_name}.sav'
-    self.threshold = 0.7
 
   def train(self):
     print(f'Started {self.classifier} training')
@@ -49,6 +49,19 @@ class SklearnModel(ABC):
     # print(preds)
     accuracy = accuracy_score(self.y_test, preds)
     return accuracy
+
+  def save_if_accuracy_is_better(self):
+    old_model = self.load()
+    if (old_model is None):
+      return self.save()
+    old_accuracy = self.get_accuracy(model=old_model)
+    print('Old accuracy: ', old_accuracy)
+    new_accuracy = self.get_accuracy()
+    print('New accuracy: ', new_accuracy)
+    if (new_accuracy > old_accuracy):
+      print(f'Saved {self.classifier} model because accuracy improved from {old_accuracy} to {new_accuracy}')
+      return self.save()
+    print(f'Did not save {self.classifier} model because accuracy decreased from {old_accuracy} to {new_accuracy}')
 
   def save_if_profit_per_share_is_better(self):
     old_model = self.load()

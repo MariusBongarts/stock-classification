@@ -19,11 +19,14 @@ def run():
 
   for model in models:
     trained_model = model.train()
-    model.save_if_profit_per_share_is_better()
+    model.save_if_accuracy_is_better()
     estimators.append((model.classifier, trained_model))
 
   ensemble = MyEnsemble(estimators)
   ensemble.train()
-  ensemble.save_if_profit_per_share_is_better()
+  ensemble.save_if_accuracy_is_better()
+
+  evaluation = ensemble.get_evaluation()
+  print(evaluation)
 
 
