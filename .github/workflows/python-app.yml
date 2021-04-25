@@ -6,6 +6,10 @@ name: Python application
 on:
   schedule:
     - cron: "35 1 * * *"
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -28,4 +32,4 @@ jobs:
         ETORO_TOKEN: ${{ secrets.ETORO_TOKEN }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_BOT_CHAT_ID: ${{ secrets.TELEGRAM_BOT_CHAT_ID }}
-      run: python main.py
+      run: python forecasting_main.py

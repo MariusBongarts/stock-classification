@@ -67,6 +67,6 @@ class DataCrawler:
   def write_data_to_file(self):
     if (self.found_positive_data):
       self.found_positive_data = False
-      path = f'./src/preprocessing/data/{file_name}.csv'
+      path = f'./preprocessing/data/{file_name}.csv'
       print(self.balanced_data.head())
       self.balanced_data.to_csv(path, mode='a',sep=';', float_format='%.2f', index=False, header=None)

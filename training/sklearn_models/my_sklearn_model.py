@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from sklearn.metrics import accuracy_score
-from training.helper import save_model, load_model, get_train_test_data
+from training.helper import save_model, get_train_test_data
 from misc.file_name import file_name
 from training.evaluation import get_evaluation
 X_train, X_test, y_train, y_test, results_target = get_train_test_data()
-
+import pickle
 class SklearnModel(ABC):
   def __init__(self, model, classifier):
     super().__init__()
@@ -14,7 +14,7 @@ class SklearnModel(ABC):
     self.y_test = y_test
     self.model = model
     self.classifier = classifier
-    self.file_name = f'./src/training/sklearn_models/{self.classifier}_{file_name}.sav'
+    self.file_name = f'training/sklearn_models/{self.classifier}_{file_name}.sav'
     self.threshold = 0.7
 
   def train(self):
@@ -27,7 +27,7 @@ class SklearnModel(ABC):
 
   def load(self):
     try:
-      return load_model(file_name=f'{self.file_name}')
+      return pickle.load(open(self.file_name, 'rb'))
     except:
       print(f'No trained model available for {self.classifier} model. Call model.train() to create a .sav file.')
       return None
@@ -66,8 +66,11 @@ class SklearnModel(ABC):
     print(f'Did not save {self.classifier} model because profit per share decreased from {old_profit_per_share} to {new_profit_per_share}')
 
   def predict_proba(self, stock):
-    proba = self.load().predict_proba(stock)
-    return proba[0][1]
+    model = self.load()
+    if model is not None:
+      proba = self.load().predict_proba(stock)
+      return proba[0][1]
+    return None
 
   def predict_probas(self, stocks):
     return self.load().predict_proba(stocks)

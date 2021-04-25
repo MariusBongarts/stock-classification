@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 
 def get_data():
-  df = pd.read_csv(f'./src/preprocessing/data/{file_name}.csv', sep=';', encoding='utf-8')
+  df = pd.read_csv(f'./preprocessing/data/{file_name}.csv', sep=';', encoding='utf-8')
   return df
 
 def get_train_test_data(test_size=0.33, random_state=2502, scale_data=False, df=None):
@@ -33,11 +33,3 @@ def get_train_test_data(test_size=0.33, random_state=2502, scale_data=False, df=
 
 def save_model(model, file_name=f'models/{file_name}.sav'):
   pickle.dump(model, open(file_name, 'wb'))
-
-def load_model(file_name=f'models/{file_name}.sav'):
-  try:
-    model = pickle.load(open(file_name, 'rb'))
-    return model
-  except:
-    print('No saved model found')
-    return None
