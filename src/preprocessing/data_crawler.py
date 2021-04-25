@@ -1,8 +1,7 @@
-from yahoo_api import YahooApi
-from data_preparator import DataPreparator
-from stock_predictor import StockPredictor
+from api.yahoo_api import YahooApi
+from preprocessing.data_preparator import DataPreparator
 from sklearn.utils import resample
-from etoro_api import EtoroApi
+from api.etoro_api import EtoroApi
 import pandas as pd
 import time
 import sys
@@ -57,19 +56,6 @@ class DataCrawler:
       self.found_positive_data = True
       negative = self.df[self.df["profit"] == 0]
 
-      # Find negative entries where prediction to buy was highest -> True Negative entries to train model better
-      # true_negatives = negative.copy()
-      # model_filename = f'./models/{file_name}.sav'
-      # stock_predictor = StockPredictor(model_filename=model_filename, proba=0.6)
-      # predicted_data = true_negatives.copy()
-      # predicted_data["prediction"] = 0.00
-      # for index, stock in predicted_data.iterrows():
-      #     predicted_data.loc[index:index]["prediction"] = stock_predictor.should_buy(true_negatives.loc[index:index], get_proba=True)
-      # # Sort by predicted value -> Higher => more likely to buy
-      # sorted_predicted_data = predicted_data.sort_values(by='prediction', ascending=False)
-      # del sorted_predicted_data["prediction"]
-      # negative = sorted_predicted_data[0:len(positive)+1]
-
       downsampled = resample(negative,
                                 replace=True,  # sample with replacement
                                 # match number in minority class
@@ -81,6 +67,6 @@ class DataCrawler:
   def write_data_to_file(self):
     if (self.found_positive_data):
       self.found_positive_data = False
-      path = f'data/{file_name}.csv'
+      path = f'./src/preprocessing/data/{file_name}.csv'
       print(self.balanced_data.head())
       self.balanced_data.to_csv(path, mode='a',sep=';', float_format='%.2f', index=False, header=None)
