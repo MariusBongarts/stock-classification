@@ -86,14 +86,6 @@ class EtoroBot:
         portfolio_symbols = list(map(lambda x: x.text, portfolio_symbol_elements))
         return portfolio_symbols
 
-    def delete_order(self, symbol):
-        self.navigate("https://www.etoro.com/portfolio/orders")
-        row_element = self.driver.find_element_by_css_selector(self.get_css_selector('div', f'orders-table-row-{symbol}', attribute_name='data-etoro-automation-id'))
-        delete_order_btn = row_element.find_element_by_css_selector(self.get_css_selector('a', 'orders-table-body-close-order-action', attribute_name='data-etoro-automation-id'))
-        delete_order_btn.click()
-        submit_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.close-order-button')))
-        submit_btn.click()
-
     def get_stock(self, stock_symbol):
         self.navigate(f'https://www.etoro.com/markets/{stock_symbol}')
         if (stock_symbol.lower() not in self.driver.current_url.lower()):
@@ -113,110 +105,6 @@ class EtoroBot:
         except Exception as e:
           print(str(e))
           return False
-
-    # Reads the instrument_id of the current stock to make the api call
-    def get_instrument_id(self, symbol):
-      selector = self.get_css_selector('a', 'investors-widget-view-more')
-      instrument_id = self.driver.execute_script(f'return window.document.querySelector(\'{selector}\').getAttribute("href").split("instrumentid=")[1].split("&")[0]')
-      return int(instrument_id)
-
-    def set_amount_of_order(self, amount):
-        amount_input_container = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, self.get_css_selector('div', 'execution-amount-input-section', attribute_name='data-etoro-automation-id'))))
-        amount_input = amount_input_container.find_element_by_css_selector(self.get_css_selector('input', 'input', attribute_name='data-etoro-automation-id'))
-        amount_input.clear()
-        amount_input.send_keys(Keys.CONTROL + "a")
-        amount_input.send_keys(Keys.DELETE)
-        amount_input.send_keys(amount)
-        amount_input.send_keys(Keys.TAB)
-        time.sleep(1)
-
-    def set_stop_loss(self, amount):
-        stop_loss_btn = self.driver.find_element_by_name('stopLoss').find_element_by_tag_name('a')
-        stop_loss_btn.click()
-        # Make sure settings is set to amount
-        try:
-          change_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.get_css_selector('a', 'execution-stop-loss-rate-editing-switch-to-amount-button', 'data-etoro-automation-id'))))
-          change_btn.click()
-        except:
-          pass
-        selector = f'{self.get_css_selector("div", "execution-stop-loss-amount-input", attribute_name="data-etoro-automation-id")} {self.get_css_selector("input", "input", attribute_name="data-etoro-automation-id")}'
-        stop_loss_input = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-        stop_loss_input.send_keys(Keys.CONTROL + "a")
-        stop_loss_input.send_keys(Keys.DELETE)
-        stop_loss_input.send_keys(amount)
-        stop_loss_input.send_keys(Keys.TAB)
-        check_value = stop_loss_input.get_property("value")
-        if (check_value != f'-${amount * -1}.00'):
-          print(f'-${amount * -1}.00')
-          raise ValueError(f'Order failed because stop loss limit was set wrong: {check_value} but expected: -${amount}.00')
-
-    def set_take_profit(self, amount):
-        take_profit_btn = self.driver.find_element_by_name('takeProfit').find_element_by_tag_name('a')
-        take_profit_btn.click()
-        # Make sure settings is set to amount
-        try:
-          change_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.get_css_selector('a', 'execution-take-profit-rate-editing-switch-to-amount-button', 'data-etoro-automation-id'))))
-          change_btn.click()
-        except:
-          pass
-        selector = f'{self.get_css_selector("div", "execution-take-profit-amount-input", attribute_name="data-etoro-automation-id")} {self.get_css_selector("input", "input", attribute_name="data-etoro-automation-id")}'
-        take_profit_input = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-        take_profit_input.send_keys(Keys.CONTROL + "a")
-        take_profit_input.send_keys(Keys.DELETE)
-        take_profit_input.send_keys(amount)
-        take_profit_input.send_keys(Keys.TAB)
-        check_value = take_profit_input.get_property("value")
-        if (check_value != f'${amount}.00'):
-          print(f'${amount}.00')
-          raise ValueError(f'Order failed because take profit was set wrong: {check_value} but expected ${amount}.00')
-
-    def submit_order(self, amount):
-        data_etoro_automation_id = 'execution-express-check-out-deposit-button-trade' if self.mode == 'real' else 'execution-open-position-button'
-        try:
-          submit_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.get_css_selector('button', data_etoro_automation_id, 'data-etoro-automation-id'))))
-        except:
-          # Sometimes the automation id is different for the btn
-          submit_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, self.get_css_selector('button', 'execution-open-entry-order-button', 'data-etoro-automation-id'))))
-        self.check_order_amount(amount)
-        submit_btn.click()
-
-    def check_order_amount(self, amount):
-        amount_input_container = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, self.get_css_selector('div', 'execution-amount-input-section', attribute_name='data-etoro-automation-id'))))
-        amount_input = amount_input_container.find_element_by_css_selector(self.get_css_selector('input', 'input', attribute_name='data-etoro-automation-id'))
-        check_value = amount_input.get_property("value")
-        if (check_value != f'${amount}.00'):
-            print(f'${amount}.00')
-            raise ValueError(f'Order failed because amount was not set correctly: {check_value} but expected ${amount}.00')
-
-    def switch_mode(self, mode):
-        self.navigate('https://www.etoro.com/watchlists')
-        dropdown_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.dropdown-menu')))
-        dropdown_btn.click()
-        time.sleep(2)
-        if (mode == 'demo'):
-            self.mode = mode
-            demo_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'et-select-body-option:nth-of-type(2)')))
-            demo_btn.click()
-        if (mode == 'real'):
-            self.mode = mode
-            real_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'et-select-body-option:nth-of-type(1)')))
-            real_btn.click()
-        time.sleep(2)
-        continue_btn = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.toggle-account-button')))
-        continue_btn.click()
-        time.sleep(2)
-
-
-    def quit_driver(self):
-        self.driver.quit()
-
-    def get_css_selector(self, tag_name, automation_id,  attribute_name='automation-id'):
-        return f'{tag_name}[{attribute_name}="{automation_id}"]'
-
-    # Etoro provides attributes for automation
-    def get_element_by_automation_id(self, tag_name, automation_id, condition=EC.visibility_of_element_located, attribute_name='automation-id'):
-        element = self.wait.until(condition((By.CSS_SELECTOR, self.get_css_selector(tag_name, automation_id, attribute_name))))
-        return element
 
     def make_order_api(self, instrument_id, amount, stock_symbol, stop_loss_percentage=2, take_profit_percentage=2):
       access_token = get_access_token()

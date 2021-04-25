@@ -2,13 +2,14 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from file_name import file_name
+from misc.file_name import file_name
 pd.options.mode.chained_assignment = None
 import pickle
+import os
 from datetime import datetime
 
 def get_data():
-  df = pd.read_csv(f'data/{ file_name }.csv', sep=';', encoding='utf-8')
+  df = pd.read_csv(f'./src/preprocessing/data/{file_name}.csv', sep=';', encoding='utf-8')
   return df
 
 def get_train_test_data(test_size=0.33, random_state=2502, scale_data=False, df=None):

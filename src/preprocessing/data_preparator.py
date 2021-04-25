@@ -9,7 +9,7 @@ from yahoo_finance_api2.exceptions import YahooFinanceError
 from datetime import datetime
 import time
 import math
-from file_name import file_name, periods, take_profit, period_type, frequency_type, stop_loss, frequency, intervals_to_profit
+from misc.file_name import file_name, periods, take_profit, period_type, frequency_type, stop_loss, frequency, intervals_to_profit
 
 class DataPreparator:
   '''This class gets a series of closing prices

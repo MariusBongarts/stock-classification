@@ -1,5 +1,5 @@
 
-from sklearn_models.my_sklearn_model import SklearnModel
+from training.sklearn_models.my_sklearn_model import SklearnModel
 from sklearn.neighbors import KNeighborsClassifier
 
 class MyKNeighbors(SklearnModel):

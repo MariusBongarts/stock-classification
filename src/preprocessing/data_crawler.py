@@ -7,7 +7,7 @@ import pandas as pd
 import time
 import sys
 from yahoo_finance_api2 import share
-from file_name import file_name, periods, take_profit, period_type, frequency_type, stop_loss, frequency, intervals_to_profit
+from misc.file_name import file_name, periods, take_profit, period_type, frequency_type, stop_loss, frequency, intervals_to_profit
 
 # Override in case environment variables are passed
 try:

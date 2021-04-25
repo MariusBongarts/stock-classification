@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from sklearn.metrics import accuracy_score
 from training.helper import save_model, load_model, get_train_test_data
-from file_name import file_name
+from misc.file_name import file_name
 from training.evaluation import get_evaluation
 X_train, X_test, y_train, y_test, results_target = get_train_test_data()
 
@@ -14,7 +14,7 @@ class SklearnModel(ABC):
     self.y_test = y_test
     self.model = model
     self.classifier = classifier
-    self.file_name = f'models/{self.classifier}_{file_name}.sav'
+    self.file_name = f'./src/training/sklearn_models/{self.classifier}_{file_name}.sav'
     self.threshold = 0.7
 
   def train(self):

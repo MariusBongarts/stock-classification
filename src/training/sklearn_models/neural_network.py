@@ -1,5 +1,5 @@
 from sklearn.neural_network import MLPClassifier
-from sklearn_models.my_sklearn_model import SklearnModel
+from training.sklearn_models.my_sklearn_model import SklearnModel
 # hidden_layer_sizes=(30,30,30)
 
 
