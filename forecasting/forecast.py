@@ -5,6 +5,7 @@ import pandas as pd
 from yahoo_finance_api2 import share
 from misc.file_name import file_name, periods, take_profit, period_type, frequency_type, stop_loss, frequency, intervals_to_profit
 from training.sklearn_models.my_ensemble import MyEnsemble
+from api.telegram import send_stock_newsletter
 
 def run(model=MyEnsemble()):
   yahoo_api = YahooApi()
@@ -24,6 +25,6 @@ def run(model=MyEnsemble()):
               stock_predictions.append({"symbol": stock["SymbolFull"], "name": stock["InstrumentDisplayName"], "proba": proba})
               print(f'{stock["InstrumentDisplayName"]}: {proba}')
 
-  sorted_stock_predictions = sorted(stock_predictions, key=lambda k: k['proba'], reverse=True)[:50]
-
+  sorted_stock_predictions = sorted(stock_predictions, key=lambda k: k['proba'], reverse=True)[:25]
   print(sorted_stock_predictions)
+  send_stock_newsletter(sorted_stock_predictions)

@@ -47,7 +47,6 @@ class DataPreparator:
 
       return self.target[columns]
     except BaseException as e:
-      print(e)
       return None
 
   def calc_profit(self, intervals_to_profit, take_profit, stop_loss):
@@ -69,7 +68,7 @@ class DataPreparator:
             self.df[f'sma_{sma}'] = self.df.apply(lambda x: round(self.df.loc[x['rowIndex']-sma:x['rowIndex']]['Close'].mean(), 2), axis=1)
           self.target[f'sma_{sma}'] = self.target.apply(lambda x: round(self.df.loc[x['rowIndex']-sma:x['rowIndex']]['Close'].mean(), 2), axis=1)
         except Exception as e:
-            print(str(e))
+            pass
 
   def calc_momentums(self):
     '''Calculates the momentums, based on the simple moving averages
